@@ -1,6 +1,40 @@
 <?php
 
-?>
+session_start();
+include 'Authentication.php';
+
+$encData=null;
+
+$clientCode='NITE5';
+$username='Ish988@sp';
+$password='wF2F0io7gdNj';
+$authKey='zvMzY0UZLxkiE6ad';
+$authIV='iFwrtsCSw3j7HG15';
+
+$payerName ='siddharth';
+$payerEmail='sidd84755@gmail.com';
+$payerMobile='9988776655';
+$payerAddress='Lucknow';
+
+$clientTxnId=rand(1000,9999);
+$amount=10;
+$amountType='INR';
+$mcc=5137;
+$channelId='W';
+$callbackUrl='http://127.0.0.1/sabpaisa/SabPaisaPostPgResponse.php';
+// Extra Parameter you can use 20 extra parameters(udf1 to udf20)
+//$Class='VIII';
+//$Roll='1008';
+
+$encData="?clientCode=".$clientCode."&transUserName=".$username."&transUserPassword=".$password."&payerName=".$payerName.
+"&payerMobile=".$payerMobile."&payerEmail=".$payerEmail."&payerAddress=".$payerAddress."&clientTxnId=".$clientTxnId.
+"&amount=".$amount."&amountType=".$amountType."&mcc=".$mcc."&channelId=".$channelId."&callbackUrl=".$callbackUrl;
+//."&udf1=".$Class."&udf2=".$Roll;
+				
+$AesCipher = new AesCipher(); 
+$data = $AesCipher->encrypt($authKey, $authIV, $encData);
+
+?>    
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,9 +63,9 @@
             <div class="mbox2c">
                 
     
-                <form action="#" method="" id="signup" novalidate class="mbox2c">
+                <form action="https://stage-securepay.sabpaisa.in/SabPaisa/sabPaisaInit?v=1" method="post" id="signup" novalidate class="mbox2c">
                     <div>
-                        <input placeholder="First Name" class="input" type="text" id="name" name="name">
+                        <input placeholder="Payer Name" class="input" type="text" name="payerName" id="payerName">
                     </div>
                     <div>
                         <input placeholder="Last Name" class="input" type="text" id="name" name="name">
@@ -52,8 +86,9 @@
                     <div>
                         <input placeholder="Amount" class="input" type="number" id="number" name="password" min="10">
                     </div>
-                    
-                    
+                    <input type="hidden" name="encData" value="<?php echo $data?>" id="frm1">
+                    <input type="hidden" name="clientCode" value ="<?php echo $clientCode?>" id="frm2">
+                    <input type="hidden" name="payerName" value="" id="frm3">
                     <button class="btn">Proceed</button>
                 </form>
             </div>
@@ -75,11 +110,23 @@
           $('#country_code').val("+"+countryCode+" "+ $('#country_code').val());
        });
     });
+
+    var payerNameInput = document.getElementById("payerName");
+
+    // Listen for changes in the payerName input field
+    payerNameInput.addEventListener("input", function () {
+        // Get the current value of the payerName input
+        var payerNameValue = payerNameInput.value;
+
+        // Update the hidden field with the payerName value
+        document.getElementById("frm3").value = payerNameValue;
+        console.log(payerNameValue);
+    });
     </script>
     
 </body>
 </html>
-    
+
     
     
     
